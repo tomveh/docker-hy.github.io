@@ -1,9 +1,28 @@
 version: 2.1
 orbs:
-  docker: circleci/docker@1.0.0
-workflows:
+  heroku: circleci/heroku@1.2.4
+jobs:
   deploy:
+    executor: heroku/default
+    steps:
+      - setup_remote_docker
+      - heroku/install
+      - heroku/check-authentication
+      - checkout
+
+      - run: |
+          docker ps
+
+      - run: |
+          heroku container:login
+
+      - run: |
+          heroku container:push web --app $HEROKU_APP_NAME
+
+      - run: |
+          heroku container:release web --app $HEROKU_APP_NAME
+
+workflows:
+  heroku_deploy:
     jobs:
-      - docker/publish:
-          image: jakousa/docker-hy
-          tag: 'latest'
+      - deploy

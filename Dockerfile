@@ -17,3 +17,6 @@ RUN jekyll build
 FROM nginx:alpine
 
 COPY --from=build-stage /usr/src/app/_site/ /usr/share/nginx/html
+
+# see https://dev.to/levelupkoodarit/deploying-containerized-nginx-to-heroku-how-hard-can-it-be-3g14
+CMD sed -i -e s/80/$PORT/g /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
